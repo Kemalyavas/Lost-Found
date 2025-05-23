@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/items/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" href="/static/items/images/favicon.ico">
+<link rel="stylesheet" href="/static/items/css/forms.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <h1><a href="{% url 'home' %}"><span class="logo-icon">📦</span> Kayıp Eşya Takip</a></h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{% url 'home' %}">Ana Sayfa</a></li>
+                    <li><a href="{% url 'lost-items' %}">Kayıp Eşyalar</a></li>
+                    <li><a href="{% url 'found-items' %}">Bulunan Eşyalar</a></li>
+                    <li><a href="{% url 'search' %}">Arama</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'claims' %}">Taleplerim</a></li>
+    <li><a href="{% url 'message-inbox' %}">Mesajlarım</a></li>
+    {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+        <li><a href="{% url 'import-export' %}">Veri Aktarma</a></li>
+        <li><a href="{% url 'categories' %}">Kategoriler</a></li>
+    {% endif %}
+    <li><a href="{% url 'logout' %}" class="btn btn-outline">Çıkış Yap</a></li>
+{% else %}
+                        <li><a href="{% url 'login' %}" class="btn btn-primary">Giriş Yap</a></li>
+                        <li><a href="{% url 'register' %}" class="btn btn-outline">Kayıt Ol</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        {% if messages %}
+            <div class="container">
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <div class="footer-container">
+            <p class="copyright">&copy; 2025 Kayıp Eşya ve Bildirim Takip Sistemi</p>
+            <ul class="footer-links">
+                <li><a href="#">Hakkımızda</a></li>
+                <li><a href="#">İletişim</a></li>
+                <li><a href="#">Yardım</a></li>
+                {% if user.is_superuser %}
+                    <li><a href="/admin/" target="_blank">Admin Paneli</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="/static/items/js/script.js"></script>
+</body>
+</html>

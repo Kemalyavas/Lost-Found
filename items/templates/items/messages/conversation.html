@@ -1,0 +1,146 @@
+<!-- templates/items/messages/conversation.html -->
+{% extends 'items/base.html' %}
+
+{% block title %}Mesajlaşma - {{ claim }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">
+        {% if claim.lost_item %}
+            {{ claim.lost_item.name }} için Mesajlaşma
+        {% else %}
+            {{ claim.found_item.name }} için Mesajlaşma
+        {% endif %}
+    </h2>
+    
+    <div class="conversation-container">
+        <div class="conversation-header">
+            <div class="conversation-info">
+                <h3>{{ other_user.get_full_name|default:other_user.username }} ile Mesajlaşma</h3>
+                <span class="badge {% if claim.status == 'pending' %}badge-warning{% elif claim.status == 'approved' %}badge-success{% else %}badge-danger{% endif %}">
+                    {{ claim.get_status_display }}
+                </span>
+            </div>
+            <a href="{% url 'claim-detail' claim.id %}" class="btn btn-tertiary">Talep Detaylarına Dön</a>
+        </div>
+        
+        <div class="messages-container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-bubble {% if message.sender == request.user %}message-sent{% else %}message-received{% endif %}">
+                        <div class="message-content">{{ message.content }}</div>
+                        <div class="message-info">
+                            <span class="message-time">{{ message.timestamp|date:"d.m.Y H:i" }}</span>
+                            {% if message.is_read and message.sender == request.user %}
+                                <span class="message-status">Okundu</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-messages">
+                    <p>Henüz mesaj bulunmuyor. İlk mesajı gönderin!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="message-form-container">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.content }}
+                </div>
+                <button type="submit" class="btn btn-primary">Gönder</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .conversation-container {
+        background: #1a1e2e;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .conversation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: #232738;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .conversation-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.2rem;
+    }
+    
+    .messages-container {
+        padding: 20px;
+        height: 400px;
+        overflow-y: auto;
+        background: #12151f;
+    }
+    
+    .message-bubble {
+        max-width: 75%;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        border-radius: 12px;
+        position: relative;
+    }
+    
+    .message-sent {
+        background: #2563eb;
+        color: white;
+        margin-left: auto;
+        border-top-right-radius: 0;
+    }
+    
+    .message-received {
+        background: #374151;
+        color: white;
+        margin-right: auto;
+        border-top-left-radius: 0;
+    }
+    
+    .message-content {
+        margin-bottom: 5px;
+    }
+    
+    .message-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        opacity: 0.7;
+    }
+    
+    .empty-messages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .message-form-container {
+        padding: 15px;
+        background: #232738;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .message-form-container form {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .message-form-container .form-group {
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}

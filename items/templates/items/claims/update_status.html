@@ -1,0 +1,47 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Talep Durumunu Güncelle - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Talep Durumunu Güncelle</h2>
+            
+            <div class="item-summary">
+                <h3>Talep Bilgileri</h3>
+                <p><strong>Talep Eden:</strong> {{ claim.claimed_by.get_full_name|default:claim.claimed_by.username }}</p>
+                <p><strong>Talep Tarihi:</strong> {{ claim.claim_date|date:"d.m.Y H:i" }}</p>
+                <p><strong>Eşya:</strong> 
+                    {% if claim.lost_item %}
+                        <a href="{% url 'lost-item-detail' claim.lost_item.pk %}">{{ claim.lost_item.name }}</a>
+                    {% elif claim.found_item %}
+                        <a href="{% url 'found-item-detail' claim.found_item.pk %}">{{ claim.found_item.name }}</a>
+                    {% endif %}
+                </p>
+                <p><strong>Açıklama:</strong> {{ claim.claim_description }}</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="form-text error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <div class="form-buttons">
+                    <a href="{% url 'claim-detail' claim.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

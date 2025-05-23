@@ -1,0 +1,114 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Mesajlarım - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Mesajlarım</h2>
+    
+    {% if conversations %}
+        <div class="conversations-list">
+            {% for conversation in conversations %}
+                <div class="conversation-card">
+                    <div class="conversation-header">
+                        <div class="conversation-info">
+                            <h3>{{ conversation.other_user.get_full_name|default:conversation.other_user.username }}</h3>
+                            {% if conversation.unread_count > 0 %}
+                                <span class="badge badge-warning">{{ conversation.unread_count }} yeni mesaj</span>
+                            {% endif %}
+                        </div>
+                        <span class="conversation-date">{{ conversation.last_message.timestamp|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    
+                    <div class="conversation-content">
+                        <div class="conversation-item">
+                            {% if conversation.claim.lost_item %}
+                                <strong>Kayıp Eşya:</strong> {{ conversation.claim.lost_item.name }}
+                            {% else %}
+                                <strong>Bulunan Eşya:</strong> {{ conversation.claim.found_item.name }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="conversation-last-message">
+                            <strong>{{ conversation.last_message.sender.username }}:</strong> 
+                            {{ conversation.last_message.content|truncatechars:100 }}
+                        </div>
+                    </div>
+                    
+                    <div class="conversation-footer">
+                        <a href="{% url 'view-conversation' claim_id=conversation.claim.id %}" class="btn btn-primary">Mesajları Görüntüle</a>
+                        <a href="{% url 'claim-detail' conversation.claim.id %}" class="btn btn-outline">Talep Detayları</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <h3>Henüz mesajlaşmanız bulunmuyor</h3>
+            <p>Kayıp veya bulunan bir eşya için talep oluşturduğunuzda veya taleplerinize cevap geldiğinde burada görüntülenecektir.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .conversations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .conversation-card {
+        background: #1a1e2e;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+    
+    .conversation-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .conversation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: #232738;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .conversation-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.2rem;
+    }
+    
+    .conversation-date {
+        font-size: 0.8rem;
+        opacity: 0.7;
+    }
+    
+    .conversation-content {
+        padding: 15px 20px;
+    }
+    
+    .conversation-item {
+        margin-bottom: 10px;
+    }
+    
+    .conversation-last-message {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .conversation-footer {
+        display: flex;
+        gap: 10px;
+        padding: 15px 20px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

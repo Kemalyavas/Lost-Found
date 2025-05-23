@@ -1,0 +1,74 @@
+{% extends 'items/base.html' %}
+
+{% block title %}{{ item.name }} - Bulunan Eşya Detayları{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="detail-container">
+            <div class="detail-header">
+                <h2>{{ item.name }}</h2>
+                <span class="detail-status status-{{ item.status }}">{{ item.get_status_display }}</span>
+            </div>
+            
+            <div class="detail-content">
+                {% if item.image %}
+                    <div class="detail-image">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    </div>
+                {% endif %}
+                
+                <div class="detail-info">
+                    <div class="detail-info-list">
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Bulunma Tarihi:</div>
+                            <div class="detail-info-value">{{ item.found_date }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Bulunduğu Yer:</div>
+                            <div class="detail-info-value">{{ item.found_location }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Şu Anki Konum:</div>
+                            <div class="detail-info-value">{{ item.current_location }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Bildirim Tarihi:</div>
+                            <div class="detail-info-value">{{ item.created_at|date:"d.m.Y H:i" }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Bulan Kişi:</div>
+                            <div class="detail-info-value">{{ item.finder.get_full_name|default:item.finder.username }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-description">
+                        <div class="detail-description-label">Açıklama:</div>
+                        <div class="detail-description-value">{{ item.description }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-actions">
+                {% if user.is_authenticated and user == item.finder or user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+                    <a href="{% url 'found-item-update' item.pk %}" class="btn btn-secondary">Düzenle</a>
+                    <a href="{% url 'found-item-delete' item.pk %}" class="btn btn-tertiary">Sil</a>
+                {% endif %}
+                
+                {% if can_claim %}
+                    {% if existing_claim %}
+                        <a href="{% url 'claim-detail' existing_claim.pk %}" class="btn btn-primary">Mevcut Talebinizi Görüntüleyin</a>
+                    {% else %}
+                        <a href="{% url 'found-item-claim' item.pk %}" class="btn btn-primary">Bu Eşyayı Talep Et</a>
+                    {% endif %}
+                {% endif %}
+                
+                <a href="{% url 'found-items' %}" class="btn btn-tertiary">Geri Dön</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

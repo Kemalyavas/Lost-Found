@@ -1,0 +1,31 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Talebi Sil - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Talebi Sil</h2>
+            <div class="alert warning">
+                <p>Bu talebi silmek istediğinizden emin misiniz?</p>
+                <p><strong>Eşya:</strong> 
+                    {% if claim.lost_item %}
+                        {{ claim.lost_item.name }}
+                    {% elif claim.found_item %}
+                        {{ claim.found_item.name }}
+                    {% endif %}
+                </p>
+                <p><strong>Talep Tarihi:</strong> {{ claim.claim_date|date:"d.m.Y H:i" }}</p>
+                <p>Bu işlem geri alınamaz!</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-buttons">
+                    <a href="{% url 'claim-detail' claim.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

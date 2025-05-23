@@ -1,0 +1,145 @@
+/* Form ve Arama Alanları İçin Gelişmiş Tasarım */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    background-color: rgba(30, 41, 59, 0.8);
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    backdrop-filter: blur(5px);
+}
+
+/* Form alanlarına odaklanma efekti */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    outline: none;
+    background-color: rgba(30, 41, 59, 0.95);
+}
+
+/* Select kutuları için özel stil */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* Tarih giriş alanları için özel stil */
+input[type="date"] {
+    padding-right: 15px;
+    color-scheme: dark;
+}
+
+/* Textarea için özel stil */
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Arama butonları için stil */
+.btn-search,
+button[type="submit"] {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-search:hover,
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Arama sayfası için container stil */
+.search-container {
+    background: rgba(17, 24, 39, 0.7);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* Search container başlığı */
+.search-container h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: white;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+/* Form grupları için stil */
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+}
+
+/* Özel dosya seçme butonu */
+input[type="file"] {
+    position: relative;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px dashed rgba(59, 130, 246, 0.5);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: #2563eb;
+}

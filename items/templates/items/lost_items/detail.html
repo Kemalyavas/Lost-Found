@@ -1,0 +1,167 @@
+{% extends 'items/base.html' %}
+
+{% block title %}{{ item.name }} - Kayıp Eşya Detayları{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-container">
+        <div class="detail-header">
+            <h2>{{ item.name }}</h2>
+            <span class="detail-status status-{{ item.status }}">{{ item.get_status_display }}</span>
+        </div>
+        
+        <div class="detail-content">
+            <div class="detail-image-column">
+                {% if item.image %}
+                    <div class="detail-image">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    </div>
+                {% else %}
+                    <div class="detail-image placeholder-image">
+                        <div class="placeholder-icon">📷</div>
+                        <p>Görsel Mevcut Değil</p>
+                    </div>
+                {% endif %}
+                
+                <div class="item-actions">
+                    {% if user.is_authenticated and user == item.reporter or user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+                        <a href="{% url 'lost-item-update' item.pk %}" class="btn btn-secondary btn-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            <span>Düzenle</span>
+                        </a>
+                        <a href="{% url 'lost-item-delete' item.pk %}" class="btn btn-danger btn-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                            <span>Sil</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="detail-info-column">
+                <div class="detail-info-section">
+                    <h3 class="section-subtitle">Eşya Bilgileri</h3>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                                <span>Durum:</span>
+                            </div>
+                            <div class="info-value">{{ item.get_status_display }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                    <line x1="7" y1="7" x2="7" y2="7"></line>
+                                </svg>
+                                <span>Kategori:</span>
+                            </div>
+                            <div class="info-value">{{ item.category.name }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>Kaybolma Tarihi:</span>
+                            </div>
+                            <div class="info-value">{{ item.lost_date }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Kaybolduğu Yer:</span>
+                            </div>
+                            <div class="info-value">{{ item.lost_location }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                <span>İletişim Bilgisi:</span>
+                            </div>
+                            <div class="info-value">{{ item.contact_info }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-info-section">
+                    <h3 class="section-subtitle">Bildirim Detayları</h3>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Bildiren Kişi:</span>
+                            </div>
+                            <div class="info-value">{{ item.reporter.get_full_name|default:item.reporter.username }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>Bildirim Tarihi:</span>
+                            </div>
+                            <div class="info-value">{{ item.created_at|date:"d.m.Y H:i" }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-description-section">
+                    <h3 class="section-subtitle">Açıklama</h3>
+                    <div class="description-content">{{ item.description }}</div>
+                </div>
+                
+                {% if can_claim %}
+                    <div class="claim-section">
+                        {% if existing_claim %}
+                            <a href="{% url 'claim-detail' existing_claim.pk %}" class="btn btn-primary btn-block">Mevcut Talebinizi Görüntüleyin</a>
+                        {% else %}
+                            <a href="{% url 'lost-item-claim' item.pk %}" class="btn btn-primary btn-block">Bu Eşyayı Talep Et</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-footer">
+            <a href="{% url 'lost-items' %}" class="btn btn-outline btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Listeye Geri Dön</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

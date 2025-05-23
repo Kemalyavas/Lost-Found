@@ -1,0 +1,32 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Bulunan Eşya Bildir - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Bulunan Eşya Bildirimi Oluştur</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="form-text error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <div class="form-buttons">
+                    <a href="{% url 'found-items' %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

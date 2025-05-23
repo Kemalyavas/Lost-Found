@@ -1,0 +1,83 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Veri Aktarma - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Veri İçeri/Dışarı Aktarma</h2>
+    
+    <div class="import-export-container">
+        <div class="import-container">
+            <h3>Veri İçeri Aktarma</h3>
+            <p>CSV formatında veri yükleyerek toplu kayıt ekleyebilirsiniz. CSV dosyasının ilk satırı başlık içermelidir.</p>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ import_form.csv_file.id_for_label }}">CSV Dosyası:</label>
+                    {{ import_form.csv_file }}
+                    {% if import_form.csv_file.help_text %}
+                        <small class="form-text">{{ import_form.csv_file.help_text }}</small>
+                    {% endif %}
+                    {% for error in import_form.csv_file.errors %}
+                        <div class="form-text error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ import_form.import_type.id_for_label }}">İçeri Aktarma Tipi:</label>
+                    {{ import_form.import_type }}
+                    {% if import_form.import_type.help_text %}
+                        <small class="form-text">{{ import_form.import_type.help_text }}</small>
+                    {% endif %}
+                    {% for error in import_form.import_type.errors %}
+                        <div class="form-text error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" name="import" class="btn btn-primary">İçeri Aktar</button>
+            </form>
+            
+            <div class="sample-formats">
+                <h4>Örnek CSV Formatları</h4>
+                <h5>Kayıp Eşyalar:</h5>
+                <pre>name,description,category,lost_date,lost_location,contact_info
+Telefon,Siyah iPhone 12,Elektronik,2025-05-01,B Binası Kütüphane,05551234567
+Cüzdan,Kahverengi deri cüzdan,Kişisel Eşya,2025-05-10,A Binası Kafeterya,05551234568</pre>
+                
+                <h5>Bulunan Eşyalar:</h5>
+<pre>name,description,category,found_date,found_location
+Anahtarlık,Metal anahtarlık,Kişisel Eşya,2025-05-05,C Binası Giriş
+Kitap,Algoritma kitabı,Kitap,2025-05-15,Kütüphane</pre>
+                
+                <h5>Kategoriler:</h5>
+                <pre>name,description
+Elektronik,Telefon, laptop, kulaklık vb. elektronik cihazlar
+Kişisel Eşya,Cüzdan, çanta, anahtarlık vb. kişisel eşyalar
+Kitap,Her türlü kitap ve basılı materyal</pre>
+            </div>
+        </div>
+        
+        <div class="export-container">
+            <h3>Veri Dışarı Aktarma</h3>
+            <p>Mevcut verileri CSV formatında dışarı aktarabilirsiniz. Dışarı aktarılan veriler, içeri aktarma formatıyla uyumludur.</p>
+            
+            <form method="POST" class="export-form">
+                {% csrf_token %}
+                <button type="submit" name="export_lost" class="btn btn-secondary">Kayıp Eşyaları Dışarı Aktar</button>
+            </form>
+            
+            <form method="POST" class="export-form">
+                {% csrf_token %}
+                <button type="submit" name="export_found" class="btn btn-secondary">Bulunan Eşyaları Dışarı Aktar</button>
+            </form>
+            
+            <form method="POST" class="export-form">
+                {% csrf_token %}
+                <button type="submit" name="export_categories" class="btn btn-secondary">Kategorileri Dışarı Aktar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

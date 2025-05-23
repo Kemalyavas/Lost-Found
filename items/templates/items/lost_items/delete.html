@@ -1,0 +1,25 @@
+{% extends 'items/base.html' %}
+
+{% block title %}{{ item.name }} - Kayıp Eşya Sil{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Kayıp Eşya Bildirimini Sil</h2>
+    
+    <div class="form-container">
+        <div class="alert warning">
+            <p>Bu kayıp eşya bildirimini silmek istediğinizden emin misiniz?</p>
+            <p><strong>{{ item.name }}</strong> - {{ item.category.name }}</p>
+            <p>Bu işlem geri alınamaz!</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-buttons">
+                <a href="{% url 'lost-item-detail' object.pk %}" class="btn btn-tertiary">İptal</a>
+                <button type="submit" class="btn btn-danger">Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

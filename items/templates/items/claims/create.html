@@ -1,0 +1,54 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Talep Oluştur - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">
+                {% if item_type == 'lost' %}
+                    Bulunan Eşya İçin Talep Oluştur
+                {% elif item_type == 'found' %}
+                    Kayıp Eşya İçin Talep Oluştur
+                {% endif %}
+            </h2>
+            
+            <div class="item-summary">
+                <h3>{{ item.name }}</h3>
+                <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                {% if item_type == 'lost' %}
+                    <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
+                    <p><strong>Kaybolduğu Yer:</strong> {{ item.lost_location }}</p>
+                {% elif item_type == 'found' %}
+                    <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+                    <p><strong>Bulunduğu Yer:</strong> {{ item.found_location }}</p>
+                    <p><strong>Şu Anki Konum:</strong> {{ item.current_location }}</p>
+                {% endif %}
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.claim_description.id_for_label }}">Eşyanın size ait olduğunu nasıl kanıtlayabilirsiniz?</label>
+                    {{ form.claim_description }}
+                    {% if form.claim_description.help_text %}
+                        <small class="form-text">{{ form.claim_description.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.claim_description.errors %}
+                        <div class="form-text error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-buttons">
+                    {% if item_type == 'lost' %}
+                        <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
+                    {% elif item_type == 'found' %}
+                        <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Talep Oluştur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

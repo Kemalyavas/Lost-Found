@@ -1,0 +1,87 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Kayıp Eşya Bildir - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Kayıp Eşya Bildirimi Oluştur</h2>
+    
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% for error in form.description.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                    {{ form.category }}
+                    {% for error in form.category.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.new_category.id_for_label }}">{{ form.new_category.label }}</label>
+                    {{ form.new_category }}
+                    <small class="form-text">Listede bulamadığınız bir kategori ise buraya yazabilirsiniz.</small>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.lost_date.id_for_label }}">{{ form.lost_date.label }}</label>
+                    {{ form.lost_date }}
+                    {% for error in form.lost_date.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.lost_location.id_for_label }}">{{ form.lost_location.label }}</label>
+                    {{ form.lost_location }}
+                    {% for error in form.lost_location.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.contact_info.id_for_label }}">{{ form.contact_info.label }}</label>
+                {{ form.contact_info }}
+                {% for error in form.contact_info.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                {{ form.image }}
+                <small class="form-text">Eşyanın fotoğrafını yükleyebilirsiniz (İsteğe bağlı).</small>
+                {% for error in form.image.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-buttons">
+                <a href="{% url 'lost-items' %}" class="btn btn-tertiary">İptal</a>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

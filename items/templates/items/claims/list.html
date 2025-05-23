@@ -1,0 +1,85 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Taleplerim - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="section-title">Taleplerim</h2>
+        
+        {% if claims %}
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Eşya</th>
+                            <th>Tip</th>
+                            <th>Talep Tarihi</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in claims %}
+                            <tr>
+                                <td>
+                                    {% if claim.lost_item %}
+                                        <a href="{% url 'lost-item-detail' claim.lost_item.pk %}">{{ claim.lost_item.name }}</a>
+                                    {% elif claim.found_item %}
+                                        <a href="{% url 'found-item-detail' claim.found_item.pk %}">{{ claim.found_item.name }}</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if claim.lost_item %}
+                                        <span class="badge badge-warning">Kayıp</span>
+                                    {% elif claim.found_item %}
+                                        <span class="badge badge-success">Bulundu</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ claim.claim_date|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    {% if claim.status == 'pending' %}
+                                        <span class="badge badge-warning">Beklemede</span>
+                                    {% elif claim.status == 'approved' %}
+                                        <span class="badge badge-success">Onaylandı</span>
+                                    {% elif claim.status == 'rejected' %}
+                                        <span class="badge badge-danger">Reddedildi</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'claim-detail' claim.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                    <a href="{% url 'claim-delete' claim.pk %}" class="btn btn-small btn-tertiary">Sil</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; İlk</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">Önceki</a>
+                        {% endif %}
+                        
+                        <span class="current">
+                            Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                        </span>
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Sonraki</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">Son &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-results">
+                <p>Henüz talep oluşturmadınız.</p>
+                <p>Bir kayıp eşyayı bulduysanız veya bulunan bir eşya sizin ise, ilgili eşya sayfasından talep oluşturabilirsiniz.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

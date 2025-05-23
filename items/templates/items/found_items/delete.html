@@ -1,0 +1,24 @@
+{% extends 'items/base.html' %}
+
+{% block title %}{{ object.name }} - Bulunan Eşya Sil{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Bulunan Eşya Bildirimini Sil</h2>
+            <div class="alert warning">
+                <p>Bu bulunan eşya bildirimini silmek istediğinizden emin misiniz?</p>
+                <p><strong>{{ object.name }}</strong> - {{ object.category.name }}</p>
+                <p>Bu işlem geri alınamaz!</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-buttons">
+                    <a href="{% url 'found-item-detail' object.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

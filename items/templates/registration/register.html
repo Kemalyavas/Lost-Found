@@ -1,0 +1,54 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Kayıt Ol - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Hesap Oluştur</h2>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3>Kullanıcı Bilgileri</h3>
+                    {% for field in u_form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="form-text error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-section">
+                    <h3>Profil Bilgileri</h3>
+                    {% for field in p_form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="form-text error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-buttons">
+                    <a href="{% url 'home' %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                </div>
+            </form>
+            <div class="form-footer">
+                <p>Zaten bir hesabınız var mı? <a href="{% url 'login' %}">Giriş Yap</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

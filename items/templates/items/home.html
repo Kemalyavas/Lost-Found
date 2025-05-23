@@ -1,0 +1,284 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Ana Sayfa - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">📦</div>
+            <h2>Kayıp Eşyalarınızı Bulalım, Bulduğunuz Eşyaları Sahiplerine Ulaştıralım</h2>
+            <p>Kayıp Eşya ve Bildirim Takip Sistemi, Kocaeli Üniversitesi kampüsündeki kayıp eşyaların yönetimini kolaylaştırmak için geliştirilmiş bir platformdur.</p>
+            
+            <div class="hero-buttons">
+                <a href="{% url 'lost-item-create' %}" class="btn btn-primary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Kayıp Eşya Bildir</span>
+                </a>
+                <a href="{% url 'found-item-create' %}" class="btn btn-secondary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Bulduğum Eşyayı Bildir</span>
+                </a>
+                <a href="{% url 'search' %}" class="btn btn-tertiary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Eşya Ara</span>
+                </a>
+            </div>
+        </div>
+        <div class="hero-background">
+            <div class="hero-shape hero-shape-1"></div>
+            <div class="hero-shape hero-shape-2"></div>
+            <div class="hero-shape hero-shape-3"></div>
+            <div class="hero-shape hero-shape-4"></div>
+        </div>
+    </section>
+        
+        <div class="home-content">
+            <section>
+                <h3 class="section-title">Son Eklenen Kayıp Eşyalar</h3>
+                {% if recent_lost_items %}
+                    <div class="card-container">
+                        {% for item in recent_lost_items %}
+                            <div class="card">
+                                {% if item.status == 'lost' %}
+                                    <div class="card-badge badge-warning">Kayıp</div>
+                                {% elif item.status == 'found' %}
+                                    <div class="card-badge badge-success">Bulundu</div>
+                                {% elif item.status == 'claimed' %}
+                                    <div class="card-badge badge-info">Talep Edildi</div>
+                                {% endif %}
+                                
+                                <div class="card-img-container">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
+                                    {% else %}
+                                        <img src="/static/items/images/placeholder.jpg" alt="Görsel Mevcut Değil" class="card-img">
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ item.name }}</h4>
+                                    <div class="card-content">
+                                        <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                                        <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
+                                        <p><strong>Yer:</strong> {{ item.lost_location }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer">
+                                    <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'lost-items' %}" class="view-all">Tüm Kayıp Eşyaları Görüntüle
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <h3>Henüz kayıp eşya bildirimi bulunmuyor</h3>
+                        <p>Kayıp bir eşyanız mı var? Hemen bildirim oluşturun ve bulunmasına yardımcı olalım.</p>
+                        <a href="{% url 'lost-item-create' %}" class="btn btn-primary">Kayıp Eşya Bildir</a>
+                    </div>
+                {% endif %}
+            </section>
+            
+            <section>
+                <h3 class="section-title">Son Eklenen Bulunan Eşyalar</h3>
+                {% if recent_found_items %}
+                    <div class="card-container">
+                        {% for item in recent_found_items %}
+                            <div class="card">
+                                {% if item.status == 'available' %}
+                                    <div class="card-badge badge-success">Mevcut</div>
+                                {% elif item.status == 'claimed' %}
+                                    <div class="card-badge badge-info">Talep Edildi</div>
+                                {% endif %}
+                                
+                                <div class="card-img-container">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
+                                    {% else %}
+                                        <img src="/static/items/images/placeholder.jpg" alt="Görsel Mevcut Değil" class="card-img">
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ item.name }}</h4>
+                                    <div class="card-content">
+                                        <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                                        <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer">
+                                    <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'found-items' %}" class="view-all">Tüm Bulunan Eşyaları Görüntüle
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>Henüz bulunan eşya bildirimi bulunmuyor</h3>
+                        <p>Bir eşya mı buldunuz? Hemen bildirim oluşturun ve sahibine ulaşmasına yardımcı olun.</p>
+                        <a href="{% url 'found-item-create' %}" class="btn btn-secondary">Bulduğum Eşyayı Bildir</a>
+                    </div>
+                {% endif %}
+            </section>
+            
+            {% if user.is_authenticated %}
+                <section>
+                    <h3 class="section-title">Bildirimlerim</h3>
+                    
+                    <h4>Kayıp Eşya Bildirimlerim</h4>
+                    {% if user_lost_items %}
+                        <div class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Eşya</th>
+                                        <th>Kategori</th>
+                                        <th>Tarih</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in user_lost_items %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.category.name }}</td>
+                                            <td>{{ item.lost_date }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ item.status }}">
+                                                    {{ item.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>Henüz kayıp eşya bildirimi yapmadınız.</p>
+                        <a href="{% url 'lost-item-create' %}" class="btn btn-small btn-primary">Kayıp Eşya Bildir</a>
+                    {% endif %}
+                    
+                    <h4>Bulunan Eşya Bildirimlerim</h4>
+                    {% if user_found_items %}
+                        <div class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Eşya</th>
+                                        <th>Kategori</th>
+                                        <th>Tarih</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in user_found_items %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.category.name }}</td>
+                                            <td>{{ item.found_date }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ item.status }}">
+                                                    {{ item.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>Henüz bulunan eşya bildirimi yapmadınız.</p>
+                        <a href="{% url 'found-item-create' %}" class="btn btn-small btn-secondary">Bulunan Eşya Bildir</a>
+                    {% endif %}
+                    
+                    <h4>Taleplerim</h4>
+                    {% if user_claims %}
+                        <div class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Eşya</th>
+                                        <th>Talep Tarihi</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for claim in user_claims %}
+                                        <tr>
+                                            <td>
+                                                {% if claim.lost_item %}
+                                                    {{ claim.lost_item.name }}
+                                                {% elif claim.found_item %}
+                                                    {{ claim.found_item.name }}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ claim.claim_date|date:"d.m.Y" }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ claim.status }}">
+                                                    {{ claim.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'claim-detail' claim.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>Henüz talep oluşturmadınız.</p>
+                    {% endif %}
+                </section>
+            {% endif %}
+            
+            <section>
+                <h3 class="section-title">Kategoriler</h3>
+                <ul class="category-list">
+                    {% for category in categories %}
+                        <li class="category-item">
+                            <a href="{% url 'category-detail' category.pk %}">
+                                {% if category.icon %}
+                                    <span class="category-icon">{{ category.icon }}</span>
+                                {% endif %}
+                                <span class="category-name">{{ category.name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </div>
+{% endblock %}

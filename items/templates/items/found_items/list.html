@@ -1,0 +1,83 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Bulunan Eşyalar - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Bulunan Eşyalar</h2>
+
+    {% if user.is_authenticated %}
+    <div class="action-button-container">
+        <a href="{% url 'found-item-create' %}" class="btn btn-secondary btn-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Yeni Bulunan Eşya Bildir</span>
+        </a>
+    </div>
+    {% endif %}
+
+    {% if found_items %}
+    <div class="card-container">
+        {% for item in found_items %}
+        <div class="card">
+            {% if item.status == 'available' %}
+                <div class="card-badge badge-success">Mevcut</div>
+            {% elif item.status == 'claimed' %}
+                <div class="card-badge badge-info">Talep Edildi</div>
+            {% endif %}
+            
+            <div class="card-img-container">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
+                {% else %}
+                    <img src="/static/items/images/placeholder.jpg" alt="Görsel Mevcut Değil" class="card-img">
+                {% endif %}
+            </div>
+            
+            <div class="card-body">
+                <h4 class="card-title">{{ item.name }}</h4>
+                <div class="card-content">
+                    <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                    <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; İlk</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Önceki</a>
+            {% endif %}
+            
+            <span class="current">
+                Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Sonraki</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Son &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <h3>Henüz bulunan eşya bildirimi bulunmuyor</h3>
+        <p>Bir eşya mı buldunuz? Hemen bildirim oluşturun ve sahibine ulaşmasına yardımcı olun.</p>
+        <a href="{% url 'found-item-create' %}" class="btn btn-secondary">Bulduğum Eşyayı Bildir</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

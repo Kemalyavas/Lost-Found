@@ -1,0 +1,314 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Arama - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Eşya Ara</h2>
+    
+    <style>
+        /* Modern Arama Formu için Özel Stiller */
+        .modern-search-container {
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.85), rgba(9, 14, 26, 0.95));
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modern-search-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1, #10b981);
+            z-index: 1;
+        }
+        
+        .search-description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+        
+        .search-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .search-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-form-group label svg {
+            margin-right: 8px;
+            opacity: 0.8;
+        }
+        
+        .search-input {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+            background-color: rgba(30, 41, 59, 0.95);
+        }
+        
+        .search-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+        
+        .form-help-text {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .search-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 180px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            .search-form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .modern-search-container {
+                padding: 20px;
+            }
+        }
+    </style>
+    
+    <div class="modern-search-container">
+        <p class="search-description">Kayıp veya bulunan eşyaları bulmak için aşağıdaki formu kullanabilirsiniz.</p>
+        
+        <form method="GET" action="">
+            <div class="search-form-grid">
+                <div class="search-form-group">
+                    <label for="{{ form.search_term.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Arama Terimi
+                    </label>
+                    <input type="text" name="search_term" class="search-input" id="{{ form.search_term.id_for_label }}" value="{{ form.search_term.value|default:'' }}" placeholder="Eşya adı veya açıklaması...">
+                    <small class="form-help-text">Eşya adı veya açıklamasında geçen bir kelime girin.</small>
+                </div>
+                
+                <div class="search-form-group">
+                    <label for="{{ form.location.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Konum
+                    </label>
+                    <input type="text" name="location" class="search-input" id="{{ form.location.id_for_label }}" value="{{ form.location.value|default:'' }}" placeholder="Kaybolduğu/bulunduğu yer...">
+                    <small class="form-help-text">Kaybolduğu/bulunduğu yer adında geçen bir kelime girin.</small>
+                </div>
+                
+                <div class="search-form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3h18v18H3zM12 8v8M8 12h8"></path>
+                        </svg>
+                        Kategori
+                    </label>
+                    {{ form.category }}
+                </div>
+                
+                <div class="search-form-group">
+                    <label for="{{ form.search_type.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Arama Tipi
+                    </label>
+                    {{ form.search_type }}
+                </div>
+                
+                <div class="search-form-group">
+                    <label for="{{ form.date_from.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Başlangıç Tarihi
+                    </label>
+                    <input type="date" name="date_from" class="search-input" id="{{ form.date_from.id_for_label }}" value="{{ form.date_from.value|default:'' }}">
+                </div>
+                
+                <div class="search-form-group">
+                    <label for="{{ form.date_to.id_for_label }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Bitiş Tarihi
+                    </label>
+                    <input type="date" name="date_to" class="search-input" id="{{ form.date_to.id_for_label }}" value="{{ form.date_to.value|default:'' }}">
+                </div>
+            </div>
+            
+            <div class="search-actions">
+                <button type="submit" class="search-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Ara
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    {% if search_performed %}
+    <div class="search-results">
+        {% if lost_items %}
+        <h3 class="section-title">Bulunan Kayıp Eşyalar ({{ lost_items|length }} sonuç)</h3>
+        <div class="card-container">
+            {% for item in lost_items %}
+            <div class="card">
+                {% if item.status == 'lost' %}
+                    <div class="card-badge badge-warning">Kayıp</div>
+                {% elif item.status == 'found' %}
+                    <div class="card-badge badge-success">Bulundu</div>
+                {% elif item.status == 'claimed' %}
+                    <div class="card-badge badge-info">Talep Edildi</div>
+                {% endif %}
+                
+                <div class="card-img-container">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
+                    {% else %}
+                        <img src="/static/items/images/placeholder.jpg" alt="Görsel Mevcut Değil" class="card-img">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <h4 class="card-title">{{ item.name }}</h4>
+                    <div class="card-content">
+                        <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                        <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
+                        <p><strong>Yer:</strong> {{ item.lost_location }}</p>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if found_items %}
+        <h3 class="section-title">Bulunan Eşyalar ({{ found_items|length }} sonuç)</h3>
+        <div class="card-container">
+            {% for item in found_items %}
+            <div class="card">
+                {% if item.status == 'available' %}
+                    <div class="card-badge badge-success">Mevcut</div>
+                {% elif item.status == 'claimed' %}
+                    <div class="card-badge badge-info">Talep Edildi</div>
+                {% endif %}
+                
+                <div class="card-img-container">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
+                    {% else %}
+                        <img src="/static/items/images/placeholder.jpg" alt="Görsel Mevcut Değil" class="card-img">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <h4 class="card-title">{{ item.name }}</h4>
+                    <div class="card-content">
+                        <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+                        <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if not lost_items and not found_items %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>Aramanızla eşleşen sonuç bulunamadı</h3>
+            <p>Lütfen farklı arama kriterleri deneyin veya daha geniş bir arama yapın.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

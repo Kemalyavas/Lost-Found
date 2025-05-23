@@ -1,0 +1,24 @@
+{% extends 'items/base.html' %}
+
+{% block title %}{{ category.name }} - Kategori Sil{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Kategori Sil</h2>
+            <div class="alert warning">
+                <p>Bu kategoriyi silmek istediğinizden emin misiniz?</p>
+                <p><strong>{{ category.name }}</strong></p>
+                <p>Bu işlem geri alınamaz! Bu kategoriye bağlı tüm kayıp ve bulunan eşyalar bu kategoriden ayrılacaktır.</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-buttons">
+                    <a href="{% url 'category-detail' category.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

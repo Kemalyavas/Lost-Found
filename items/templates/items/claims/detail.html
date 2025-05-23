@@ -1,0 +1,101 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Talep Detayları - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="detail-container">
+            <div class="detail-header">
+                <h2>Talep Detayları</h2>
+                {% if claim.status == 'pending' %}
+                    <span class="detail-status status-warning">Beklemede</span>
+                {% elif claim.status == 'approved' %}
+                    <span class="detail-status status-success">Onaylandı</span>
+                {% elif claim.status == 'rejected' %}
+                    <span class="detail-status status-danger">Reddedildi</span>
+                {% endif %}
+            </div>
+            
+            <div class="detail-content">
+                <div class="detail-info">
+                    <div class="detail-info-list">
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Eşya:</div>
+                            <div class="detail-info-value">
+                                {% if claim.lost_item %}
+                                    <a href="{% url 'lost-item-detail' claim.lost_item.pk %}">{{ claim.lost_item.name }}</a>
+                                {% elif claim.found_item %}
+                                    <a href="{% url 'found-item-detail' claim.found_item.pk %}">{{ claim.found_item.name }}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Talep Eden:</div>
+                            <div class="detail-info-value">{{ claim.claimed_by.get_full_name|default:claim.claimed_by.username }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Talep Tarihi:</div>
+                            <div class="detail-info-value">{{ claim.claim_date|date:"d.m.Y H:i" }}</div>
+                        </div>
+                        
+                        <div class="detail-info-item">
+                            <div class="detail-info-label">Durum:</div>
+                            <div class="detail-info-value">{{ claim.get_status_display }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-description">
+                        <div class="detail-description-label">Talep Açıklaması:</div>
+                        <div class="detail-description-value">{{ claim.claim_description }}</div>
+                    </div>
+                    
+                    {% if claim.admin_notes and is_staff_or_admin %}
+                        <div class="detail-description">
+                            <div class="detail-description-label">Yönetici Notları:</div>
+                            <div class="detail-description-value">{{ claim.admin_notes }}</div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if is_staff_or_admin %}
+                        <div class="detail-admin-form">
+                            <h3>Talep Durumunu Güncelle</h3>
+                            <form method="POST" action="{% url 'claim-update-status' claim.pk %}">
+                                {% csrf_token %}
+                                
+                                {% for field in admin_form %}
+                                    <div class="form-group">
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text">{{ field.help_text }}</small>
+                                        {% endif %}
+                                        {% for error in field.errors %}
+                                            <div class="form-text error">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                                
+                                <button type="submit" class="btn btn-primary">Güncelle</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="detail-actions">
+                <a href="{% url 'claims' %}" class="btn btn-tertiary">Geri Dön</a>
+                <a href="{% url 'claim-delete' claim.pk %}" class="btn btn-danger">Talebi Sil</a>
+            </div>
+        </div>
+    </div>
+<div class="card-action">
+    <a href="{% url 'view-conversation' claim_id=claim.id %}" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Mesajlar
+    </a>
+</div>
+{% endblock %}
