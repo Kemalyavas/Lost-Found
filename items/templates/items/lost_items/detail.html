@@ -142,14 +142,17 @@
                 </div>
                 
                 {% if can_claim %}
-                    <div class="claim-section">
-                        {% if existing_claim %}
-                            <a href="{% url 'claim-detail' existing_claim.pk %}" class="btn btn-primary btn-block">Mevcut Talebinizi Görüntüleyin</a>
-                        {% else %}
-                            <a href="{% url 'lost-item-claim' item.pk %}" class="btn btn-primary btn-block">Bu Eşyayı Talep Et</a>
-                        {% endif %}
-                    </div>
-                {% endif %}
+    {% if existing_claim %}
+        <a href="{% url 'claim-detail' existing_claim.pk %}" class="btn btn-primary">Mevcut Talebinizi Görüntüleyin</a>
+    {% else %}
+        <a href="{% url 'lost-item-claim' item.pk %}" class="btn btn-success btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            Bu Eşyayı Buldum - Teslim Etmek İstiyorum
+        </a>
+    {% endif %}
+{% endif %}
             </div>
         </div>
         

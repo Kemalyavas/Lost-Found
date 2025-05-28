@@ -3,81 +3,352 @@
 {% block title %}{{ category.name }} - Kategori Detayları{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="detail-container">
-            <div class="detail-header">
-                <h2>
-                    {% if category.icon %}
-                        <span class="category-icon">{{ category.icon }}</span>
-                    {% endif %}
-                    {{ category.name }}
-                </h2>
-            </div>
-            
-            <div class="detail-content">
-                <div class="detail-info">
-                    <div class="detail-description">
-                        <div class="detail-description-label">Kategori Açıklaması:</div>
-                        <div class="detail-description-value">{{ category.description }}</div>
-                    </div>
-                    
-                    <h3 class="section-title">Bu Kategorideki Kayıp Eşyalar</h3>
-                    {% if lost_items %}
-                        <div class="card-container">
-                            {% for item in lost_items %}
-                                <div class="card">
-                                    {% if item.image %}
-                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
-                                    {% endif %}
-                                    <h4 class="card-title">{{ item.name }}</h4>
-                                    <div class="card-content">
-                                        <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
-                                        <p><strong>Yer:</strong> {{ item.lost_location }}</p>
-                                        <p><strong>Durum:</strong> {{ item.get_status_display }}</p>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p>Bu kategoride henüz kayıp eşya bildirimi bulunmuyor.</p>
-                    {% endif %}
-                    
-                    <h3 class="section-title">Bu Kategorideki Bulunan Eşyalar</h3>
-                    {% if found_items %}
-                        <div class="card-container">
-                            {% for item in found_items %}
-                                <div class="card">
-                                    {% if item.image %}
-                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img">
-                                    {% endif %}
-                                    <h4 class="card-title">{{ item.name }}</h4>
-                                    <div class="card-content">
-                                        <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
-                                        <p><strong>Şu Anki Konum:</strong> {{ item.current_location }}</p>
-                                        <p><strong>Durum:</strong> {{ item.get_status_display }}</p>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-small btn-primary">Detaylar</a>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p>Bu kategoride henüz bulunan eşya bildirimi bulunmuyor.</p>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="detail-actions">
-                {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
-                    <a href="{% url 'category-update' category.pk %}" class="btn btn-secondary">Düzenle</a>
-                    <a href="{% url 'category-delete' category.pk %}" class="btn btn-tertiary">Sil</a>
+<div class="container">
+    <div class="category-detail-container">
+        <div class="category-header">
+            <div class="category-icon-large">
+                {% if category.icon %}
+                    {{ category.icon }}
+                {% else %}
+                    📦
                 {% endif %}
-                <a href="{% url 'categories' %}" class="btn btn-tertiary">Geri Dön</a>
+            </div>
+            <div class="category-info">
+                <h1 class="category-title">{{ category.name }}</h1>
+                <p class="category-description">{{ category.description }}</p>
+            </div>
+            
+            {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+            <div class="category-actions">
+                <a href="{% url 'category-update' category.pk %}" class="btn btn-secondary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <span>Düzenle</span>
+                </a>
+                <a href="{% url 'category-delete' category.pk %}" class="btn btn-danger btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Sil</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="category-content">
+            <!-- Kayıp Eşyalar Bölümü -->
+            <div class="items-section">
+                <h2 class="section-title">Bu Kategorideki Kayıp Eşyalar</h2>
+                {% if lost_items %}
+                    <div class="items-grid">
+                        {% for item in lost_items %}
+                            <div class="item-card">
+                                {% if item.status == 'lost' %}
+                                    <div class="item-badge badge-warning">Kayıp</div>
+                                {% elif item.status == 'found' %}
+                                    <div class="item-badge badge-success">Bulundu</div>
+                                {% elif item.status == 'claimed' %}
+                                    <div class="item-badge badge-info">Talep Edildi</div>
+                                {% endif %}
+                                
+                                <div class="item-image">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                                    {% else %}
+                                        <div class="placeholder-img">
+                                            <span>📷</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="item-info">
+                                    <h3 class="item-name">{{ item.name }}</h3>
+                                    <p class="item-date">{{ item.lost_date }}</p>
+                                    <p class="item-location">{{ item.lost_location }}</p>
+                                </div>
+                                
+                                <div class="item-actions">
+                                    <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-primary btn-small">Detaylar</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-section">
+                        <div class="empty-icon">📦</div>
+                        <p>Bu kategoride henüz kayıp eşya bildirimi bulunmuyor.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Bulunan Eşyalar Bölümü -->
+            <div class="items-section">
+                <h2 class="section-title">Bu Kategorideki Bulunan Eşyalar</h2>
+                {% if found_items %}
+                    <div class="items-grid">
+                        {% for item in found_items %}
+                            <div class="item-card">
+                                {% if item.status == 'available' %}
+                                    <div class="item-badge badge-success">Mevcut</div>
+                                {% elif item.status == 'claimed' %}
+                                    <div class="item-badge badge-info">Talep Edildi</div>
+                                {% endif %}
+                                
+                                <div class="item-image">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                                    {% else %}
+                                        <div class="placeholder-img">
+                                            <span>📷</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="item-info">
+                                    <h3 class="item-name">{{ item.name }}</h3>
+                                    <p class="item-date">{{ item.found_date }}</p>
+                                    <p class="item-location">{{ item.found_location }}</p>
+                                </div>
+                                
+                                <div class="item-actions">
+                                    <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-primary btn-small">Detaylar</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-section">
+                        <div class="empty-icon">🔍</div>
+                        <p>Bu kategoride henüz bulunan eşya bildirimi bulunmuyor.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
+
+        <div class="back-section">
+            <a href="{% url 'categories' %}" class="btn btn-outline btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Kategorilere Geri Dön</span>
+            </a>
+        </div>
     </div>
+</div>
+
+<style>
+.category-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.category-header {
+    background: linear-gradient(135deg, #1a1e2e 0%, #232738 100%);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.category-icon-large {
+    font-size: 4rem;
+    background: rgba(59, 130, 246, 0.1);
+    width: 100px;
+    height: 100px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.category-info {
+    flex-grow: 1;
+}
+
+.category-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+}
+
+.category-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.category-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.items-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #3b82f6;
+    padding-bottom: 10px;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.item-card {
+    background: linear-gradient(135deg, #1a1e2e 0%, #232738 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.item-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 1;
+}
+
+.badge-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.badge-success {
+    background: #10b981;
+    color: white;
+}
+
+.badge-info {
+    background: #3b82f6;
+    color: white;
+}
+
+.item-image {
+    width: 100%;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.item-info {
+    margin-bottom: 15px;
+}
+
+.item-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.item-date, .item-location {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 4px 0;
+}
+
+.item-actions {
+    text-align: center;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.empty-section {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.empty-section p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.back-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .category-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .category-title {
+        font-size: 2rem;
+    }
+    
+    .category-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 {% endblock %}

@@ -24,8 +24,8 @@
         <div class="card">
             {% if item.status == 'available' %}
                 <div class="card-badge badge-success">Mevcut</div>
-            {% elif item.status == 'claimed' %}
-                <div class="card-badge badge-info">Talep Edildi</div>
+            {% elif item.status == 'solved' %}
+                <div class="card-badge badge-info">Çözümlendi</div>
             {% endif %}
             
             <div class="card-img-container">
@@ -41,6 +41,8 @@
                 <div class="card-content">
                     <p><strong>Kategori:</strong> {{ item.category.name }}</p>
                     <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+                    <!-- found_location kaldırıldı -->
+                    <p><strong>Bulan:</strong> {{ item.finder.get_full_name|default:item.finder.username }}</p>
                 </div>
             </div>
             

@@ -15,7 +15,7 @@
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-buttons">
-                    <a href="{% url 'category-detail' category.pk %}" class="btn btn-tertiary">İptal</a>
+                    <a href="{% url 'category-detail' object.pk %}" class="btn btn-tertiary">İptal</a>
                     <button type="submit" class="btn btn-danger">Sil</button>
                 </div>
             </form>

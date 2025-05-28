@@ -1,0 +1,220 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Sohbeti Sil - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+
+{% block content %}
+<style>
+    .delete-confirmation-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background: rgba(17, 24, 39, 0.95);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        overflow: hidden;
+    }
+    
+    .delete-header {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+        padding: 25px;
+        border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+        text-align: center;
+    }
+    
+    .delete-header h2 {
+        margin: 0;
+        color: #ef4444;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .delete-content {
+        padding: 30px;
+    }
+    
+    .warning-box {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .warning-box h3 {
+        color: #ef4444;
+        margin: 0 0 15px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .warning-box ul {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+        padding-left: 20px;
+    }
+    
+    .warning-box li {
+        margin-bottom: 8px;
+    }
+    
+    .conversation-info {
+        background: rgba(55, 65, 81, 0.6);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .info-label {
+        font-weight: 500;
+    }
+    
+    .info-value {
+        color: white;
+    }
+    
+    .delete-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn-danger-confirm {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-danger-confirm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-cancel {
+        background: rgba(55, 65, 81, 0.8);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(55, 65, 81, 1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container">
+    <div class="delete-confirmation-container">
+        <div class="delete-header">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18l-1.5 14H4.5L3 6z"></path>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                Sohbeti Sil
+            </h2>
+        </div>
+        
+        <div class="delete-content">
+            <div class="warning-box">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Dikkat! Bu işlem geri alınamaz
+                </h3>
+                <ul>
+                    <li>Bu sohbetteki <strong>{{ messages_count }} mesaj</strong> kalıcı olarak silinecektir</li>
+                    <li>Gönderilen dosyalar ve ekler de silinecektir</li>
+                    <li>Bu işlem <strong>geri alınamaz</strong></li>
+                    <li>Karşı taraf sohbetin silindiğini göremeyecektir</li>
+                </ul>
+            </div>
+            
+            <div class="conversation-info">
+                <div class="info-item">
+                    <span class="info-label">Sohbet Partner:</span>
+                    <span class="info-value">{{ other_user.get_full_name|default:other_user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Talep Edilen Eşya:</span>
+                    <span class="info-value">
+                        {% if claim.lost_item %}
+                            {{ claim.lost_item.name }} (Kayıp Eşya)
+                        {% elif claim.found_item %}
+                            {{ claim.found_item.name }} (Bulunan Eşya)
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Toplam Mesaj Sayısı:</span>
+                    <span class="info-value">{{ messages_count }} mesaj</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Talep Durumu:</span>
+                    <span class="info-value">{{ claim.get_status_display }}</span>
+                </div>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="delete-actions">
+                    <a href="{% url 'view-conversation' claim.id %}" class="btn-cancel">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        İptal Et
+                    </a>
+                    <button type="submit" class="btn-danger-confirm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18l-1.5 14H4.5L3 6z"></path>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                        Sohbeti Sil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1323,36 +1323,111 @@ textarea.form-control {
 
 /* Category List */
 .category-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
   list-style: none;
-  margin-top: 1rem;
+  padding: 0;
+  margin: 0;
 }
 
 .category-item {
-  background-color: #e0f2fe;
-  padding: 0.75rem 1.25rem;
-  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: var(--box-shadow-sm);
+  overflow: hidden;
 }
 
 .category-item:hover {
-  background-color: #bae6fd;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(14, 165, 233, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .category-item a {
   display: flex;
   align-items: center;
-  color: #0369a1;
-  font-weight: 500;
+  gap: 15px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
 }
 
 .category-icon {
-  margin-right: 0.5rem;
+  font-size: 2rem;
+  background: rgba(59, 130, 246, 0.2);
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.category-name {
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.category-item:hover .category-icon {
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(1.1);
+}
+
+.category-item:hover .category-name {
+  color: #60a5fa;
+}
+
+/* Ana sayfa bölümleri arası düzenli boşluklar */
+.home-content section {
+  margin-bottom: 50px;
+}
+
+.home-content section:last-child {
+  margin-bottom: 30px;
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .category-list {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .category-item a {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  .category-name {
+    font-size: 0.9rem;
+  }
+
+  .user-notifications-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .category-item a {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 }
 
 /* Loader/Spinner */
@@ -2117,6 +2192,13 @@ footer {
   }
 }
 
+.status-badge.status-claimed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  font-weight: 600;
+}
+
+
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;
@@ -2131,4 +2213,223 @@ footer {
     align-items: flex-start;
     gap: 1rem;
   }
+}
+
+.home-content {
+  padding-bottom: 40px;
+}
+
+.home-content section {
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.home-content section:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Hero section ile ilk content arasında boşluk */
+.hero+.home-content {
+  margin-top: 80px;
+}
+
+/* Bildirimlerim bölümü için özel stilleme */
+.home-content section h3.section-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.home-content section h4 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  margin: 30px 0 15px 0;
+  padding-left: 15px;
+  border-left: 3px solid #3b82f6;
+}
+
+/* Bildirimlerim tabloları arası boşluk */
+.data-table-container {
+  margin-bottom: 25px;
+}
+
+/* Son eşyalar için grid iyileştirmesi */
+.card-container {
+  margin-bottom: 30px;
+}
+
+.view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 20px;
+  padding: 12px 0;
+  transition: all 0.2s ease;
+}
+
+.view-all:hover {
+  color: #60a5fa;
+  transform: translateX(4px);
+}
+
+.view-all svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.view-all:hover svg {
+  transform: translateX(2px);
+}
+
+/* Empty state iyileştirmesi */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 16px;
+  border: 2px dashed rgba(59, 130, 246, 0.2);
+  margin: 30px 0;
+}
+
+.empty-state .empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+.empty-state h3 {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 15px;
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 25px;
+}
+
+/* Responsive iyileştirmeler */
+@media (max-width: 768px) {
+  .home-content section {
+    margin-bottom: 40px;
+  }
+
+  .hero+.home-content {
+    margin-top: 40px;
+  }
+
+  .categories-section {
+    margin: 40px 0;
+    padding: 30px 0;
+  }
+
+  .empty-state {
+    padding: 30px 15px;
+  }
+}
+
+/* Section divider lines */
+.home-content section:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+}
+
+@media (max-width: 768px) {
+  .home-content section:not(:last-child)::after {
+    bottom: -20px;
+    width: 40px;
+  }
+}
+
+.user-notifications-section {
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: 16px;
+  padding: 30px;
+  margin: 40px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-notifications-section h3.section-title {
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-notifications-section h3.section-title::before {
+  content: '👤';
+  font-size: 1.5rem;
+}
+
+.user-notifications-section h4 {
+  color: #3b82f6;
+  font-size: 1.1rem;
+  margin: 25px 0 15px 0;
+  padding-left: 12px;
+  border-left: 3px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-notifications-section h4:first-of-type::before {
+  content: '📦';
+}
+
+.user-notifications-section h4:nth-of-type(2)::before {
+  content: '🔍';
+}
+
+.user-notifications-section h4:nth-of-type(3)::before {
+  content: '📝';
+}
+
+/* Tablolar arası boşluk */
+.user-notifications-section .data-table-container {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Tablo başarısı mesajları */
+.user-notifications-section p {
+  color: rgba(255, 255, 255, 0.7);
+  padding: 15px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  margin: 15px 0;
+}
+
+/* Kategoriler bölümü düzenleme */
+.categories-section {
+  margin: 50px 0 30px 0;
+  padding: 30px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categories-section h3.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.categories-section h3.section-title::before {
+  content: '🏷️';
+  font-size: 1.5rem;
 }

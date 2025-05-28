@@ -17,8 +17,8 @@ class ItemCategory(models.Model):
 class LostItem(models.Model):
     STATUS_CHOICES = [
         ('lost', 'Kayıp'),
-        ('found', 'Bulundu'),
-        ('claimed', 'Talep Edildi'),
+        ('claimed', 'Bulundu'),
+        ('solved', 'Çözümlendi'), 
     ]
     
     name = models.CharField(max_length=100, verbose_name="Eşya Adı")
@@ -30,6 +30,11 @@ class LostItem(models.Model):
     image = models.ImageField(upload_to='lost_items/', blank=True, null=True, verbose_name="Eşya Resmi")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='lost', verbose_name="Durum")
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Bildiren Kişi")
+    
+    # Çözümlenen ilanlar için yeni alanlar
+    solved_date = models.DateTimeField(null=True, blank=True, verbose_name="Çözümlenme Tarihi")
+    solved_by_claim = models.ForeignKey('Claim', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="Çözümleyen Talep")
+    
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Güncellenme Tarihi")
     
@@ -47,18 +52,22 @@ class LostItem(models.Model):
 class FoundItem(models.Model):
     STATUS_CHOICES = [
         ('available', 'Mevcut'),
-        ('claimed', 'Talep Edildi'),
+        ('claimed', 'Sahip Bulundu'),
+        ('solved', 'Çözümlendi'),
     ]
     
     name = models.CharField(max_length=100, verbose_name="Eşya Adı")
     description = models.TextField(verbose_name="Eşya Açıklaması")
     category = models.ForeignKey(ItemCategory, on_delete=models.CASCADE, verbose_name="Kategori")
     found_date = models.DateField(verbose_name="Bulunma Tarihi")
-    found_location = models.CharField(max_length=200, verbose_name="Bulunduğu Yer")
-    current_location = models.CharField(max_length=200, verbose_name="Şu An Bulunduğu Yer")
+    # found_location field'ini kaldırdık - güvenlik için
     image = models.ImageField(upload_to='found_items/', blank=True, null=True, verbose_name="Eşya Resmi")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available', verbose_name="Durum")
     finder = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Bulan Kişi")
+    
+    solved_date = models.DateTimeField(null=True, blank=True, verbose_name="Çözümlenme Tarihi")
+    solved_by_claim = models.ForeignKey('Claim', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="Çözümleyen Talep")
+    
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Güncellenme Tarihi")
     
@@ -103,13 +112,13 @@ class Claim(models.Model):
     
     def get_absolute_url(self):
         return reverse('claim-detail', kwargs={'pk': self.pk})
-    
 
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE, verbose_name="Gönderen")
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE, verbose_name="Alıcı")
     claim = models.ForeignKey(Claim, on_delete=models.CASCADE, related_name='messages', verbose_name="İlgili Talep")
     content = models.TextField(verbose_name="Mesaj İçeriği")
+    attachment = models.FileField(upload_to='message_attachments/', blank=True, null=True, verbose_name="Dosya Eki")
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Gönderim Zamanı") 
     is_read = models.BooleanField(default=False, verbose_name="Okundu mu")
     
@@ -139,4 +148,4 @@ class UserProfile(models.Model):
         verbose_name_plural = "Kullanıcı Profilleri"
     
     def __str__(self):
-        return f"{self.user.username} - {self.get_user_type_display()}" 
+        return f"{self.user.username} - {self.get_user_type_display()}"

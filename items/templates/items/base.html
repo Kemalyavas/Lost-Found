@@ -12,7 +12,36 @@
     <link rel="stylesheet" href="/static/items/css/style.css">
     <!-- Favicon -->
     <link rel="icon" href="/static/items/images/favicon.ico">
-<link rel="stylesheet" href="/static/items/css/forms.css">
+    <link rel="stylesheet" href="/static/items/css/forms.css">
+    
+    <!-- Bildirim Badge için CSS -->
+    <style>
+        .notification-badge {
+            position: relative;
+        }
+        
+        .notification-badge::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #1f2937;
+        }
+        
+        .notification-badge[data-count="0"]::after {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -28,13 +57,16 @@
                     <li><a href="{% url 'search' %}">Arama</a></li>
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'claims' %}">Taleplerim</a></li>
-    <li><a href="{% url 'message-inbox' %}">Mesajlarım</a></li>
-    {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
-        <li><a href="{% url 'import-export' %}">Veri Aktarma</a></li>
-        <li><a href="{% url 'categories' %}">Kategoriler</a></li>
-    {% endif %}
-    <li><a href="{% url 'logout' %}" class="btn btn-outline">Çıkış Yap</a></li>
-{% else %}
+                    <li class="notification-badge" data-count="{{ unread_messages_count|default:0 }}">
+                        <a href="{% url 'message-inbox' %}">Mesajlarım</a>
+                    </li>
+                    {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+                        <li><a href="{% url 'import-export' %}">Veri Aktarma</a></li>
+                        <li><a href="{% url 'categories' %}">Kategoriler</a></li>
+                        <li><a href="{% url 'solved-items' %}">Çözümlenen İlanlar</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}" class="btn btn-outline">Çıkış Yap</a></li>
+                    {% else %}
                         <li><a href="{% url 'login' %}" class="btn btn-primary">Giriş Yap</a></li>
                         <li><a href="{% url 'register' %}" class="btn btn-outline">Kayıt Ol</a></li>
                     {% endif %}

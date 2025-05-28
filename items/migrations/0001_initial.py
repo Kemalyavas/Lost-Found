@@ -35,7 +35,6 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(verbose_name='Eşya Açıklaması')),
                 ('found_date', models.DateField(verbose_name='Bulunma Tarihi')),
                 ('found_location', models.CharField(max_length=200, verbose_name='Bulunduğu Yer')),
-                ('current_location', models.CharField(max_length=200, verbose_name='Şu An Bulunduğu Yer')),
                 ('image', models.ImageField(blank=True, null=True, upload_to='found_items/', verbose_name='Eşya Resmi')),
                 ('status', models.CharField(choices=[('available', 'Mevcut'), ('claimed', 'Talep Edildi')], default='available', max_length=10, verbose_name='Durum')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Oluşturulma Tarihi')),

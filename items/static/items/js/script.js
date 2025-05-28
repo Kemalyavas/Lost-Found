@@ -34,9 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Form gönderimlerinde yükleme göstergesi
-  const forms = document.querySelectorAll('form:not(.search-form)');
+  // NOT: .no-loading-indicator sınıfına sahip formları hariç tut
+  const forms = document.querySelectorAll('form:not(.search-form):not(.no-loading-indicator)');
   forms.forEach(function (form) {
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (e) {
       const submitButton = form.querySelector('button[type="submit"]');
       if (submitButton) {
         const originalText = submitButton.innerHTML;

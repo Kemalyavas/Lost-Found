@@ -1,54 +1,90 @@
 {% extends 'items/base.html' %}
 
-{% block title %}Talep Oluştur - Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}
+{% block title %}
+    {% if item_type == 'lost' %}
+        Eşya Teslim Talebi - {{ item.name }}
+    {% else %}
+        Sahiplik Talebi - {{ item.name }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="form-container">
-            <h2 class="form-title">
-                {% if item_type == 'lost' %}
-                    Bulunan Eşya İçin Talep Oluştur
-                {% elif item_type == 'found' %}
-                    Kayıp Eşya İçin Talep Oluştur
-                {% endif %}
-            </h2>
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">
+            {% if item_type == 'lost' %}
+                🤝 Bu Eşyayı Buldum - Teslim Etmek İstiyorum
+            {% else %}
+                👤 Bu Benim Eşyam - Sahiplik Talebi
+            {% endif %}
+        </h2>
+        
+        <div class="claim-item-info">
+            <h3>{{ item.name }}</h3>
+            <p><strong>Kategori:</strong> {{ item.category.name }}</p>
+            {% if item_type == 'lost' %}
+                <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
+                <p><strong>Kaybolduğu Yer:</strong> {{ item.lost_location }}</p>
+            {% else %}
+                <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
+            {% endif %}
+            <p><strong>Açıklama:</strong> {{ item.description }}</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
             
-            <div class="item-summary">
-                <h3>{{ item.name }}</h3>
-                <p><strong>Kategori:</strong> {{ item.category.name }}</p>
-                {% if item_type == 'lost' %}
-                    <p><strong>Kaybolma Tarihi:</strong> {{ item.lost_date }}</p>
-                    <p><strong>Kaybolduğu Yer:</strong> {{ item.lost_location }}</p>
-                {% elif item_type == 'found' %}
-                    <p><strong>Bulunma Tarihi:</strong> {{ item.found_date }}</p>
-                    <p><strong>Bulunduğu Yer:</strong> {{ item.found_location }}</p>
-                    <p><strong>Şu Anki Konum:</strong> {{ item.current_location }}</p>
-                {% endif %}
+            <div class="form-group">
+                <label for="{{ form.claim_description.id_for_label }}">
+                    {% if item_type == 'lost' %}
+                        Teslim Açıklaması
+                    {% else %}
+                        Sahiplik Kanıtı
+                    {% endif %}
+                </label>
+                {{ form.claim_description }}
+                <small class="form-text">
+                    {% if item_type == 'lost' %}
+                        Bu eşyayı nerede ve nasıl bulduğunuzu detaylı bir şekilde açıklayın.
+                    {% else %}
+                        Bu eşyanın size ait olduğunu nasıl kanıtlayabilirsiniz? (Renk, marka, özel özellikler, satın alma yeri/tarihi vb.)
+                    {% endif %}
+                </small>
+                {% for error in form.claim_description.errors %}
+                    <div class="form-text error">{{ error }}</div>
+                {% endfor %}
             </div>
             
-            <form method="POST">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="{{ form.claim_description.id_for_label }}">Eşyanın size ait olduğunu nasıl kanıtlayabilirsiniz?</label>
-                    {{ form.claim_description }}
-                    {% if form.claim_description.help_text %}
-                        <small class="form-text">{{ form.claim_description.help_text }}</small>
-                    {% endif %}
-                    {% for error in form.claim_description.errors %}
-                        <div class="form-text error">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-buttons">
-                    {% if item_type == 'lost' %}
-                        <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
-                    {% elif item_type == 'found' %}
-                        <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
-                    {% endif %}
-                    <button type="submit" class="btn btn-primary">Talep Oluştur</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-buttons">
+                {% if item_type == 'lost' %}
+                    <a href="{% url 'lost-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-success">Teslim Talebi Gönder</button>
+                {% else %}
+                    <a href="{% url 'found-item-detail' item.pk %}" class="btn btn-tertiary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Sahiplik Talebi Gönder</button>
+                {% endif %}
+            </div>
+        </form>
     </div>
+</div>
+
+<style>
+.claim-item-info {
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(9, 14, 26, 0.9));
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.claim-item-info h3 {
+    color: #3b82f6;
+    margin-bottom: 15px;
+}
+
+.claim-item-info p {
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.9);
+}
+</style>
 {% endblock %}

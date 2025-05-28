@@ -59,18 +59,86 @@ class LostItemForm(forms.ModelForm):
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
-        fields = ['content']
+        fields = ['content', 'attachment']
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Mesajınızı buraya yazın...'}),
+            'content': forms.Textarea(attrs={
+                'rows': 1, 
+                'placeholder': 'Mesajınızı yazın...',
+                'class': 'chat-input'
+            }),
+            'attachment': forms.FileInput(attrs={
+                'class': 'file-input',
+                'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png,.txt'
+            })
         }
+    
+    def clean_content(self):
+        content = self.cleaned_data.get('content')
+        return content
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        content = cleaned_data.get('content')
+        attachment = cleaned_data.get('attachment')
+        
+        # İçerik veya dosya en az birisi olmalı
+        if not content and not attachment:
+            raise forms.ValidationError('Mesaj içeriği veya dosya eklemek zorunludur.')
+        
+        return cleaned_data
+    
+    def clean_attachment(self):
+        attachment = self.cleaned_data.get('attachment')
+        
+        if attachment:
+            # Dosya boyutu kontrolü (10MB)
+            if attachment.size > 10 * 1024 * 1024:
+                raise forms.ValidationError('Dosya boyutu 10MB\'dan küçük olmalıdır.')
+            
+            # Dosya tipi kontrolü
+            allowed_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt']
+            file_extension = attachment.name.lower().split('.')[-1]
+            if f'.{file_extension}' not in allowed_extensions:
+                raise forms.ValidationError('Desteklenen dosya formatları: PDF, DOC, DOCX, JPG, JPEG, PNG, TXT')
+        
+        return attachment
 
 class FoundItemForm(forms.ModelForm):
+    new_category = forms.CharField(required=False, label="Yeni Kategori (Listede yoksa)")
+    
     class Meta:
         model = FoundItem
-        fields = ['name', 'description', 'category', 'found_date', 'found_location', 'image']
+        fields = ['name', 'description', 'category', 'found_date', 'image']  # found_location kaldırıldı
         widgets = {
             'found_date': forms.DateInput(attrs={'type': 'date'}),
         }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        new_category = cleaned_data.get('new_category')
+        
+        if not category and not new_category:
+            raise forms.ValidationError('Lütfen bir kategori seçin veya yeni bir kategori girin.')
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # Eğer yeni kategori girilmişse, oluştur ve ata
+        new_category = self.cleaned_data.get('new_category')
+        if new_category and not self.cleaned_data.get('category'):
+            category, created = ItemCategory.objects.get_or_create(
+                name=new_category,
+                defaults={'description': f'{new_category} kategorisi', 'icon': '📦'}
+            )
+            instance.category = category
+        
+        if commit:
+            instance.save()
+        
+        return instance
 
 class ClaimForm(forms.ModelForm):
     class Meta:
@@ -116,25 +184,87 @@ class CSVImportForm(forms.Form):
         if not csv_file.name.endswith('.csv'):
             raise forms.ValidationError('Dosya CSV formatında olmalıdır.')
         
+        # Dosya boyutunu kontrol et (5MB max)
+        if csv_file.size > 5 * 1024 * 1024:
+            raise forms.ValidationError('CSV dosyası 5MB\'dan büyük olamaz.')
+        
         # CSV formatını kontrol et
         try:
             csv_file.seek(0)
-            reader = csv.reader(io.StringIO(csv_file.read().decode('utf-8')))
-            header = next(reader)
-            # İçeri aktarma tipine göre başlıkları kontrol et
-            import_type = self.cleaned_data.get('import_type')
+            # Farklı encoding'leri dene
+            file_content = csv_file.read()
+            
+            # Encoding'i tespit et
+            try:
+                decoded_content = file_content.decode('utf-8-sig')
+            except:
+                try:
+                    decoded_content = file_content.decode('utf-8')
+                except:
+                    try:
+                        decoded_content = file_content.decode('windows-1254')
+                    except:
+                        decoded_content = file_content.decode('iso-8859-9')
+            
+            reader = csv.DictReader(io.StringIO(decoded_content))
+            headers = reader.fieldnames
+            
+            if not headers:
+                raise forms.ValidationError('CSV dosyası boş veya başlık satırı yok.')
+            
+            # Header'ları normalize et (küçük harf, boşlukları temizle)
+            normalized_headers = [h.lower().strip() for h in headers]
+            
+            # İçeri aktarma tipine göre gerekli alanları kontrol et
+            import_type = self.data.get('import_type')  # cleaned_data henüz hazır değil
             
             if import_type == 'lost':
-                required_headers = ['name', 'description', 'category', 'lost_date', 'lost_location', 'contact_info']
+                # Türkçe ve İngilizce başlıkları kabul et
+                required_fields = {
+                    'name': ['ad', 'name', 'isim'],
+                    'description': ['açıklama', 'description', 'aciklama'],
+                    'category': ['kategori', 'category'],
+                    'date': ['tarih', 'lost_date', 'date'],
+                    'location': ['yer', 'lost_location', 'location', 'konum'],
+                    'contact': ['iletişim', 'contact_info', 'contact', 'iletisim']
+                }
             elif import_type == 'found':
-                required_headers = ['name', 'description', 'category', 'found_date', 'found_location']
+                required_fields = {
+                    'name': ['ad', 'name', 'isim'],
+                    'description': ['açıklama', 'description', 'aciklama'],
+                    'category': ['kategori', 'category'],
+                    'date': ['tarih', 'found_date', 'date']
+                }
             elif import_type == 'categories':
-                required_headers = ['name', 'description']
+                required_fields = {
+                    'name': ['ad', 'name', 'isim'],
+                    'description': ['açıklama', 'description', 'aciklama']
+                }
+            else:
+                required_fields = {}
             
-            for required_header in required_headers:
-                if required_header not in header:
-                    raise forms.ValidationError(f"CSV dosyasında '{required_header}' sütunu eksik.")
+            # Her gerekli alan için en az bir başlık var mı kontrol et
+            missing_fields = []
+            for field_name, possible_headers in required_fields.items():
+                found = False
+                for header in possible_headers:
+                    if header in normalized_headers:
+                        found = True
+                        break
+                if not found:
+                    missing_fields.append(field_name)
+            
+            if missing_fields:
+                raise forms.ValidationError(
+                    f"CSV dosyasında şu alanlar eksik: {', '.join(missing_fields)}. "
+                    f"Lütfen örnek formatlara uygun bir CSV dosyası yükleyin."
+                )
+            
+            # Dosya pozisyonunu başa al
+            csv_file.seek(0)
                     
+        except forms.ValidationError:
+            raise
         except Exception as e:
             raise forms.ValidationError(f"CSV dosyası okunamadı: {str(e)}")
         

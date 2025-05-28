@@ -24,6 +24,9 @@ urlpatterns = [
     path('found-items/new/', views.FoundItemCreateView.as_view(), name='found-item-create'),
     path('found-items/<int:pk>/update/', views.FoundItemUpdateView.as_view(), name='found-item-update'),
     path('found-items/<int:pk>/delete/', views.FoundItemDeleteView.as_view(), name='found-item-delete'),
+
+    # Çözümlenen İlanlar (Admin/Staff için)
+    path('solved-items/', views.SolvedItemsListView.as_view(), name='solved-items'),
     
     # Talepler
     path('claims/', views.ClaimListView.as_view(), name='claims'),
@@ -32,6 +35,8 @@ urlpatterns = [
     path('found-items/<int:pk>/claim/', views.create_claim_for_found_item, name='found-item-claim'),
     path('claims/<int:pk>/update-status/', views.update_claim_status, name='claim-update-status'),
     path('claims/<int:pk>/delete/', views.ClaimDeleteView.as_view(), name='claim-delete'),
+    path('claims/<int:pk>/approve/', views.approve_claim, name='approve-claim'),
+
     
     # Kategoriler
     path('categories/', views.CategoryListView.as_view(), name='categories'),
@@ -49,4 +54,6 @@ urlpatterns = [
     #Mesajlaşma
     path('messages/', views.message_inbox, name='message-inbox'),
     path('messages/claim/<int:claim_id>/', views.view_conversation, name='view-conversation'),
+    path('messages/claim/<int:claim_id>/delete/', views.delete_conversation, name='delete_conversation'),
+    path('messages/claim/<int:claim_id>/delete-ajax/', views.delete_conversation_ajax, name='delete_conversation_ajax'),
 ]

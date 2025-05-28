@@ -36,48 +36,117 @@
                     {% endfor %}
                 </div>
                 
-                <button type="submit" name="import" class="btn btn-primary">İçeri Aktar</button>
+                <button type="submit" name="import" value="1" class="btn btn-primary">İçeri Aktar</button>
             </form>
-            
-            <div class="sample-formats">
-                <h4>Örnek CSV Formatları</h4>
-                <h5>Kayıp Eşyalar:</h5>
-                <pre>name,description,category,lost_date,lost_location,contact_info
-Telefon,Siyah iPhone 12,Elektronik,2025-05-01,B Binası Kütüphane,05551234567
-Cüzdan,Kahverengi deri cüzdan,Kişisel Eşya,2025-05-10,A Binası Kafeterya,05551234568</pre>
-                
-                <h5>Bulunan Eşyalar:</h5>
-<pre>name,description,category,found_date,found_location
-Anahtarlık,Metal anahtarlık,Kişisel Eşya,2025-05-05,C Binası Giriş
-Kitap,Algoritma kitabı,Kitap,2025-05-15,Kütüphane</pre>
-                
-                <h5>Kategoriler:</h5>
-                <pre>name,description
-Elektronik,Telefon, laptop, kulaklık vb. elektronik cihazlar
-Kişisel Eşya,Cüzdan, çanta, anahtarlık vb. kişisel eşyalar
-Kitap,Her türlü kitap ve basılı materyal</pre>
-            </div>
         </div>
         
         <div class="export-container">
             <h3>Veri Dışarı Aktarma</h3>
             <p>Mevcut verileri CSV formatında dışarı aktarabilirsiniz. Dışarı aktarılan veriler, içeri aktarma formatıyla uyumludur.</p>
             
-            <form method="POST" class="export-form">
+            <form method="POST" action="{% url 'import-export' %}" class="export-form no-loading-indicator">
                 {% csrf_token %}
-                <button type="submit" name="export_lost" class="btn btn-secondary">Kayıp Eşyaları Dışarı Aktar</button>
+                <input type="hidden" name="export_lost" value="1">
+                <button type="submit" class="btn btn-secondary">Kayıp Eşyaları Dışarı Aktar</button>
             </form>
             
-            <form method="POST" class="export-form">
+            <form method="POST" action="{% url 'import-export' %}" class="export-form no-loading-indicator">
                 {% csrf_token %}
-                <button type="submit" name="export_found" class="btn btn-secondary">Bulunan Eşyaları Dışarı Aktar</button>
+                <input type="hidden" name="export_found" value="1">
+                <button type="submit" class="btn btn-secondary">Bulunan Eşyaları Dışarı Aktar</button>
             </form>
             
-            <form method="POST" class="export-form">
+            <form method="POST" action="{% url 'import-export' %}" class="export-form no-loading-indicator">
                 {% csrf_token %}
-                <button type="submit" name="export_categories" class="btn btn-secondary">Kategorileri Dışarı Aktar</button>
+                <input type="hidden" name="export_categories" value="1">
+                <button type="submit" class="btn btn-secondary">Kategorileri Dışarı Aktar</button>
             </form>
         </div>
     </div>
+    
+    <div class="sample-formats">
+        <h4>Örnek CSV Formatları</h4>
+        <h5>Kayıp Eşyalar:</h5>
+        <pre>Ad,Açıklama,Kategori,Tarih,Yer,İletişim
+Telefon,Siyah iPhone 12,Elektronik,01.05.2025,B Binası Kütüphane,05551234567
+Cüzdan,Kahverengi deri cüzdan,Kişisel Eşya,10.05.2025,A Binası Kafeterya,05551234568</pre>
+        
+        <h5>Bulunan Eşyalar:</h5>
+        <pre>Ad,Açıklama,Kategori,Tarih
+Anahtarlık,Metal anahtarlık,Kişisel Eşya,05.05.2025,C Binası Giriş
+Kitap,Algoritma kitabı,Kitap,15.05.2025,Kütüphane</pre>
+        
+        <h5>Kategoriler:</h5>
+        <pre>Ad,Açıklama,İkon
+Elektronik,Telefon laptop kulaklık vb. elektronik cihazlar,📱
+Kişisel Eşya,Cüzdan çanta anahtarlık vb. kişisel eşyalar,👜
+Kitap,Her türlü kitap ve basılı materyal,📚</pre>
+    </div>
 </div>
+
+<style>
+.import-export-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.import-container, .export-container {
+    background: linear-gradient(135deg, #1a1e2e 0%, #232738 100%);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.sample-formats {
+    margin-top: 30px;
+    background: linear-gradient(135deg, #1a1e2e 0%, #232738 100%);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.sample-formats h4 {
+    color: #3b82f6;
+    margin-bottom: 20px;
+}
+
+.sample-formats h5 {
+    color: #60a5fa;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.sample-formats pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #e0e0e0;
+}
+
+.export-form {
+    margin-bottom: 15px;
+}
+
+.export-form:last-child {
+    margin-bottom: 0;
+}
+
+.btn-secondary {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .import-export-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+</style>
 {% endblock %}
