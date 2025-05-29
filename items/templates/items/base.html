@@ -3,29 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Kayıp Eşya ve Bildirim Takip Sistemi{% endblock %}</title>
-    <!-- Google Fonts -->
+    <title>{% if page_title %}{{ page_title }} - {% endif %}Kayıp Eşya Takip Sistemi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- CSS -->
-    <link rel="stylesheet" href="/static/items/css/style.css">
-    <!-- Favicon -->
-    <link rel="icon" href="/static/items/images/favicon.ico">
-    <link rel="stylesheet" href="/static/items/css/forms.css">
-    
-    <!-- Bildirim Badge için CSS -->
-    <style>
+    <link rel="stylesheet" href="/static/items/css/style.css"> <link rel="stylesheet" href="/static/items/css/forms.css"> <link rel="icon" href="/static/items/images/favicon.ico"> <style>
         .notification-badge {
             position: relative;
         }
-        
         .notification-badge::after {
             content: attr(data-count);
             position: absolute;
             top: -8px;
             right: -8px;
-            background: #ef4444;
+            background: #ef4444; /* Tailwind red-500 */
             color: white;
             border-radius: 50%;
             width: 18px;
@@ -35,14 +26,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #1f2937;
+            border: 2px solid #1f2937; /* Tailwind gray-800 */
         }
-        
-        .notification-badge[data-count="0"]::after {
+        .notification-badge[data-count="0"]::after,
+        .notification-badge[data-count=""]::after { /* data-count boşsa da gizle */
             display: none;
         }
     </style>
-</head>
+    {% block extra_head %}{% endblock %} </head>
 <body>
     <header>
         <div class="header-container">
@@ -56,16 +47,16 @@
                     <li><a href="{% url 'found-items' %}">Bulunan Eşyalar</a></li>
                     <li><a href="{% url 'search' %}">Arama</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'claims' %}">Taleplerim</a></li>
-                    <li class="notification-badge" data-count="{{ unread_messages_count|default:0 }}">
-                        <a href="{% url 'message-inbox' %}">Mesajlarım</a>
-                    </li>
-                    {% if user.is_staff or user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
-                        <li><a href="{% url 'import-export' %}">Veri Aktarma</a></li>
-                        <li><a href="{% url 'categories' %}">Kategoriler</a></li>
-                        <li><a href="{% url 'solved-items' %}">Çözümlenen İlanlar</a></li>
-                    {% endif %}
-                    <li><a href="{% url 'logout' %}" class="btn btn-outline">Çıkış Yap</a></li>
+                        <li><a href="{% url 'profile' %}">Profilim</a></li> <li><a href="{% url 'claims' %}">Taleplerim</a></li>
+                        <li class="notification-badge" data-count="{{ unread_messages_count|default:0 }}">
+                            <a href="{% url 'message-inbox' %}">Mesajlarım</a>
+                        </li>
+                        {% if user.userprofile.user_type == 'staff' or user.userprofile.user_type == 'admin' or user.is_superuser %}
+                            <li><a href="{% url 'import-export' %}">Veri Aktarma</a></li>
+                            <li><a href="{% url 'categories' %}">Kategoriler</a></li>
+                            <li><a href="{% url 'solved-items' %}">Çözümlenen İlanlar</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'logout' %}" class="btn btn-outline">Çıkış Yap</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}" class="btn btn-primary">Giriş Yap</a></li>
                         <li><a href="{% url 'register' %}" class="btn btn-outline">Kayıt Ol</a></li>
@@ -74,27 +65,23 @@
             </nav>
         </div>
     </header>
-    
+
     <main>
         {% if messages %}
-            <div class="container">
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="message {{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
+            <div class="container messages-container"> {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message|safe }} </div>
+                {% endfor %}
             </div>
         {% endif %}
-        
+
         {% block content %}
         {% endblock %}
     </main>
-    
+
     <footer>
         <div class="footer-container">
-            <p class="copyright">&copy; 2025 Kayıp Eşya ve Bildirim Takip Sistemi</p>
+            <p class="copyright">&copy; {% now "Y" %} Kayıp Eşya ve Bildirim Takip Sistemi</p>
             <ul class="footer-links">
                 <li><a href="#">Hakkımızda</a></li>
                 <li><a href="#">İletişim</a></li>
@@ -105,8 +92,6 @@
             </ul>
         </div>
     </footer>
-    
-    <!-- JavaScript -->
-    <script src="/static/items/js/script.js"></script>
-</body>
+
+    <script src="/static/items/js/script.js"></script> {% block extra_scripts %}{% endblock %} </body>
 </html>

@@ -1,0 +1,162 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Profilim - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-container">
+        <h2 class="section-title">Profil Bilgilerim</h2>
+
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.username.0|upper }}
+            </div>
+            <div class="profile-user-info">
+                <h3>{{ user.get_full_name|default:user.username }}</h3>
+                <p>{{ user.email }}</p>
+                {% if user_profile %}
+                    <span class="badge user-type-{{ user_profile.user_type|lower }}">
+                        {{ user_profile.get_user_type_display }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message|safe }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="profile-form-container">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">Kullanıcı Bilgileri</legend>
+                    <div class="form-group">
+                        <label for="id_username_display">Kullanıcı Adı:</label>
+                        <input type="text" id="id_username_display" value="{{ user.username }}" readonly class="form-control-readonly">
+                        <small class="form-text">Kullanıcı adı değiştirilemez.</small>
+                    </div>
+
+                    {% for field in u_form %}
+                        {% if field.name != 'username' %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}<small class="form-text">{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<div class="form-text error">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">Ek Profil Bilgileri</legend>
+                    {% for field in p_form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}<small class="form-text">{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}<div class="form-text error">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% endfor %}
+                </fieldset>
+
+                <div class="form-buttons profile-buttons">
+                    <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
+                    <a href="{% url 'password_change' %}" class="btn btn-secondary">Şifre Değiştir</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 30px;
+        background: var(--background-color-dark);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        border: 1px solid var(--border-color-soft);
+    }
+    .profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--border-color-soft);
+    }
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-right: 20px;
+        flex-shrink: 0;
+        border: 3px solid var(--background-color-light);
+    }
+    .profile-user-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.6rem;
+        color: var(--text-color-light);
+        font-weight: 600;
+    }
+    .profile-user-info p {
+        margin: 0 0 10px 0;
+        color: var(--text-color-medium);
+        font-size: 0.95rem;
+    }
+    .badge {
+        padding: 0.35em 0.75em;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 10px;
+        display: inline-block;
+        text-transform: capitalize;
+    }
+    .user-type-regular { background-color: #6b7280; color: white; }
+    .user-type-staff { background-color: #f59e0b; color: white; }
+    .user-type-admin { background-color: #ef4444; color: white; }
+
+    .profile-form-container .form-fieldset {
+        border: 1px solid var(--border-color-soft);
+        padding: 20px 25px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        background-color: rgba(255,255,255,0.03);
+    }
+    .profile-form-container .fieldset-legend {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color-light);
+        padding: 0 10px;
+        margin-left: 5px;
+        background-color: var(--background-color-dark);
+    }
+    .form-control-readonly {
+        background-color: var(--input-disabled-bg-color) !important;
+        border-color: var(--input-disabled-border-color) !important;
+        color: var(--input-disabled-text-color) !important;
+        cursor: not-allowed;
+    }
+    .profile-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+    .profile-buttons .btn {
+        flex-grow: 0;
+        min-width: 140px;
+    }
+</style>
+{% endblock %}
